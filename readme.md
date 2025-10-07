@@ -12,19 +12,25 @@ This system allows you to display live sensor data, store it in a database, and 
 ## 📁 Project Structure
 
 ```
-├── Arduino/
-│   ├── main.ino
-│   ├── sensor.ino
-│   ├── wifi_connect.ino
+├── 📂 Arduino/
+│   ├── 📂 session3/
+│   │   └── session3.ino
+│   ├── 📂 session3core/
+│   │   └── session3core.ino
+│   ├── 📂 session3googledocs/
+│   │   └── session3googledocs.ino
+│   ├── 📂 web-server-led/
+│   │   └── web-server-led.ino
+│   ├── 📂 libraries/
 │
-├── xampp/
+├── 📂 xampp/
 │   └── htdocs/
 │       ├── backend.php
 │       ├── index.php
 │       ├── fetch_data.php
 │       ├── graph.html
 │       ├── style.css
-│       └── webserver/
+│       └── 📂 webserver/
 │           └── index.html
 ```
 
@@ -59,7 +65,7 @@ This system allows you to display live sensor data, store it in a database, and 
      ```
    - Run locally at:
      ```
-     http://localhost/index.php
+     http://localhost/yourfoldername
      ```
 
 ---
@@ -89,9 +95,8 @@ This system allows you to display live sensor data, store it in a database, and 
 
 ---
 
-### Step 3: Connect ESP32 to Wi-Fi
-
-Upload code to ESP32  
+### Step 3: Upload code to ESP32
+ 
 ⚠️ **Warning**: When uploading, ensure wires are properly connected and free from interference
 
 ---
