@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robotics Bootcamp 1.0 - ESP32 LED Control</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <!-- Custom CSS -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f6fa;
+            font-size: 16px;
+            color: #333;
+        }
+
+        /* Navbar */
+        .navbar {
+            background-color: #007bff;
+            color: white;
+            padding: 1rem;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            text-align: center;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        }
+
+        .navbar h1 {
+            margin: 0;
+            font-size: clamp(1.5rem, 5vw, 1.8rem);
+            font-weight: bold;
+
+        }
+
+        /* Container */
+        .container {
+            margin-top: 5rem;
+            padding: 1rem;
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Cards */
+        .card {
+            border-radius: 15px;
+            background: linear-gradient(135deg, #e8f0ff 0%, #ffffff 100%);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: all 0.2s ease-in-out;
+            border: none;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+        }
+
+        .card-title {
+            color: #007bff;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .card-body {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Toggle wrapper */
+        .toggle-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        /* Sleek Toggle Switch - Increased width */
+        .form-check-input.toggle-switch {
+            appearance: none;
+            width: 6rem;
+            height: 2.2rem;
+            border-radius: 30px;
+            background-color: #ccc;
+            position: relative;
+            outline: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            border: none;
+        }
+
+        /* Circle */
+        .form-check-input.toggle-switch::before {
+            content: "";
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 1.7rem;
+            height: 1.7rem;
+            border-radius: 50%;
+            background-color: white;
+            transition: transform 0.25s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+        }
+
+        /* Checked state */
+        .form-check-input.toggle-switch:checked {
+            background-color: #007bff;
+        }
+
+        .form-check-input.toggle-switch:checked::before {
+            transform: translateX(3.7rem);
+        }
+
+        /* Status text */
+        .switch-status {
+            font-weight: bold;
+            font-size: 1.05rem;
+            min-width: 40px;
+            text-align: left;
+        }
+
+        .switch-status.on {
+            color: #28a745;
+        }
+
+        .switch-status.off {
+            color: #dc3545;
+        }
+
+        /* ESP32 Info Section */
+        .esp-info-card .card-body {
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem 1.2rem;
+        }
+
+        .esp-info-card .list-group {
+            width: 100%;
+            background: transparent;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0;
+        }
+
+        .esp-info-card .list-group-item {
+            background: transparent;
+            border: none;
+            padding: 0.6rem 0;
+            font-size: 1rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+            width: 80%;
+            text-align: center;
+        }
+
+        .esp-info-card .list-group-item:last-child {
+            border-bottom: none;
+        }
+
+        .esp-info-card span {
+            font-weight: bold;
+            color: #007bff;
+            margin-left: 0.5rem;
+        }
+
+        /* Responsive */
+        @media screen and (max-width: 768px) {
+            .container {
+                padding: 0.5rem;
+                max-width: 95%;
+            }
+
+            .card {
+                margin-bottom: 1rem;
+            }
+
+            .esp-info-card .list-group-item {
+                width: 100%;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            .container {
+                margin-top: 5.5rem;
+            }
+
+            .card-title {
+                font-size: 1.2rem;
+            }
+
+            .form-check-input.toggle-switch {
+                width: 4.5rem;
+                height: 1.5rem;
+            }
+
+            .form-check-input.toggle-switch::before {
+                width: 1.1rem;
+                height: 1.1rem;
+                top: 2px;
+                left: 2px;
+            }
+
+            .form-check-input.toggle-switch:checked::before {
+                transform: translateX(3.1rem);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+
+    <nav class="navbar text-center">
+        <h1>Robotics Bootcamp 1.0</h1>
+    </nav>
+
+    <div class="container">
+        <h2 class="text-center mb-4">ESP32 Multiple LED Control</h2>
+        <div class="row row-cols-1 row-cols-md-2 g-4" id="ledControls">
+            <!-- LED Cards -->
+            <div class="col">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">LED D2</h5>
+                        <div class="toggle-wrapper">
+                            <input class="form-check-input toggle-switch" type="checkbox" id="led2" data-pin="2">
+                            <span class="switch-status off" id="status-led2">OFF</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">LED D4</h5>
+                        <div class="toggle-wrapper">
+                            <input class="form-check-input toggle-switch" type="checkbox" id="led4" data-pin="4">
+                            <span class="switch-status off" id="status-led4">OFF</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">LED D16</h5>
+                        <div class="toggle-wrapper">
+                            <input class="form-check-input toggle-switch" type="checkbox" id="led16" data-pin="16">
+                            <span class="switch-status off" id="status-led16">OFF</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">LED D17</h5>
+                        <div class="toggle-wrapper">
+                            <input class="form-check-input toggle-switch" type="checkbox" id="led17" data-pin="17">
+                            <span class="switch-status off" id="status-led17">OFF</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ESP32 Info Section -->
+        <h2 class="text-center mt-5 mb-4">ESP32 Microcontroller Details</h2>
+        <div class="card esp-info-card">
+            <div class="card-body">
+                <ul class="list-group" id="espInfo">
+                    <li class="list-group-item">IP Address: <span id="ip">Loading...</span></li>
+                    <li class="list-group-item">MAC Address: <span id="mac">Loading...</span></li>
+                    <li class="list-group-item">Chip Model: <span id="chipModel">Loading...</span></li>
+                    <li class="list-group-item">Chip Revision: <span id="chipRevision">Loading...</span></li>
+                    <li class="list-group-item">Flash Size (kb): <span id="flashSize">Loading...</span></li>
+                    <li class="list-group-item">Free Heap (kb): <span id="freeHeap">Loading...</span></li>
+                    <li class="list-group-item">SDK Version: <span id="sdkVersion">Loading...</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        const esp32_ip = "http://192.168.68.96"; // Change to your ESP32 IP
+
+        function fetchESPInfo() {
+            $.ajax({
+                url: `${esp32_ip}/info`,
+                method: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    $('#ip').text(data.ip);
+                    $('#mac').text(data.mac);
+                    $('#chipModel').text(data.chipModel);
+                    $('#chipRevision').text(data.chipRevision);
+                    $('#flashSize').text(data.flashSize);
+                    $('#freeHeap').text(data.freeHeap);
+                    $('#sdkVersion').text(data.sdkVersion);
+                    fetchLEDStates();
+                },
+                error: function () {
+                    $('#espInfo span').text('Error');
+                }
+            });
+        }
+
+        function fetchLEDStates() {
+            $.ajax({
+                url: `${esp32_ip}/states`,
+                method: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    data.states.forEach(state => {
+                        const checkbox = $(`#led${state.pin}`);
+                        const statusEl = $(`#status-led${state.pin}`);
+
+                        checkbox.prop('checked', state.state === 1);
+                        if (state.state === 1) {
+                            statusEl.text("ON").removeClass("off").addClass("on");
+                        } else {
+                            statusEl.text("OFF").removeClass("on").addClass("off");
+                        }
+                    });
+                }
+            });
+        }
+
+        function toggleLED(pin, state) {
+            $.ajax({
+                url: `${esp32_ip}/control?pin=${pin}&state=${state}`,
+                method: 'GET',
+                success: function () {
+                    fetchLEDStates();
+                }
+            });
+        }
+
+        $(document).on('change', '.toggle-switch', function () {
+            const pin = $(this).data('pin');
+            const state = $(this).is(':checked') ? 1 : 0;
+
+            const statusEl = $(`#status-led${pin}`);
+            if (state === 1) {
+                statusEl.text("ON").removeClass("off").addClass("on");
+            } else {
+                statusEl.text("OFF").removeClass("on").addClass("off");
+            }
+
+            toggleLED(pin, state);
+        });
+
+        fetchESPInfo();
+        setInterval(fetchLEDStates, 5000);
+    </script>
+</body>
+
+</html>

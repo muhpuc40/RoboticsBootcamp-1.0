@@ -1,0 +1,14 @@
+Session 3: IoT App & Web Development
+
+1. About Apps, Web and Server
+2. How Data is Sent – Basic Network, OSI Model, Protocols, IP, MAC, and Port
+3. Where Data is Stored? XAMPP setup
+4. Frontend – HTML, CSS, JavaScript
+5. What is an API?
+6. Data Format – JSON and AJAX
+7. Backend – PHP and MySQL
+8. ESP Core, Web Server and HTTPClient 
+9. Google Sheet Extension
+10. I AM Google (Google API & Authentication)
+11. MQTT (Message Queuing Telemetry Transport)
+12. Flutter Basic

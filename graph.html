@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Live Temperature & Humidity Gauges</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script type="module" src="https://esm.sh/svg-gauge"></script>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      background: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+
+    .navbar {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 2rem;
+      background: linear-gradient(90deg, #007bff 0%, #00c6ff 100%);
+      color: #fff;
+      font-size: 1.5rem;
+      font-weight: bold;
+      letter-spacing: 1px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .gauges-wrapper {
+      margin-top: 5.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+
+    .gauges {
+      display: flex;
+      gap: 40px;
+      flex-wrap: wrap;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .gauge-container {
+      width: 350px;
+      height: 350px;
+      background: linear-gradient(135deg, #e0e7ff 0%, #fff 100%);
+      border-radius: 20px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+      position: relative;
+      padding: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
+      transition: box-shadow 0.2s;
+    }
+
+    .gauge-container:hover {
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.22);
+    }
+
+    .gauge-container .label {
+      position: absolute;
+      top: 0;
+      right: 0;
+      background: linear-gradient(90deg, #007bff 60%, #00c6ff 100%);
+      color: #fff;
+      font-size: 1em;
+      padding: 8px 18px;
+      border-radius: 0 20px 0 0;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    @media screen and (max-width: 900px) {
+      .gauge-container {
+        width: 270px;
+        height: 270px;
+        padding: 10px;
+      }
+
+      .gauges {
+        gap: 20px;
+      }
+
+      .gauge-container .label {
+        font-size: 0.85em;
+        padding: 5px 10px;
+        border-radius: 0 14px 0 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="navbar">
+    <h1>Live Temperature & Humidity</h1>
+  </div>
+  <div class="gauges-wrapper">
+    <div class="gauges">
+      <div id="gaugeTemp" class="gauge-container">
+        <span class="label">Temperature (°C)</span>
+      </div>
+      <div id="gaugeHum" class="gauge-container">
+        <span class="label">Humidity (%)</span>
+      </div>
+    </div>
+  </div>
+  <script type="module">
+    import Gauge from "https://esm.sh/svg-gauge";
+
+    // Colorful gradients for gauges
+    const tempColors = [
+      { stop: 0, color: "#00eaff" },
+      { stop: 0.5, color: "#ffe600" },
+      { stop: 0.8, color: "#ff7c00" },
+      { stop: 1, color: "#ff0059" }
+    ];
+    const humColors = [
+      { stop: 0, color: "#b2f7ef" },
+      { stop: 0.5, color: "#00c6ff" },
+      { stop: 1, color: "#007bff" }
+    ];
+
+    // Helper to interpolate color
+    function getColor(value, min, max, stops) {
+      const percent = (value - min) / (max - min);
+      for (let i = 1; i < stops.length; i++) {
+        if (percent <= stops[i].stop) {
+          const prev = stops[i - 1], next = stops[i];
+          const local = (percent - prev.stop) / (next.stop - prev.stop);
+          // Simple RGB interpolation
+          const c1 = prev.color.match(/\w\w/g).map(x => parseInt(x, 16));
+          const c2 = next.color.match(/\w\w/g).map(x => parseInt(x, 16));
+          const rgb = c1.map((c, j) => Math.round(c + (c2[j] - c) * local));
+          return `#${rgb.map(x => x.toString(16).padStart(2, "0")).join("")}`;
+        }
+      }
+      return stops[stops.length - 1].color;
+    }
+
+    // Initialize gauges
+    const gaugeTemp = Gauge(document.getElementById("gaugeTemp"), {
+      min: -10, max: 50, value: 0,
+      dialStartAngle: 180, dialEndAngle: 0,
+      color: value => getColor(value, -10, 50, tempColors),
+      label: value => Math.round(value * 100) / 100
+    });
+
+    const gaugeHum = Gauge(document.getElementById("gaugeHum"), {
+      min: 0, max: 100, value: 0,
+      dialStartAngle: -90, dialEndAngle: -90.001,
+      color: value => getColor(value, 0, 100, humColors),
+      label: value => Math.round(value * 100) / 100
+    });
+
+    // Fetch live sensor data from PHP
+    async function fetchSensorData() {
+      try {
+        const res = await fetch('fetch_data.php');
+        const data = await res.json();
+        if (data.temperature !== undefined && data.humidity !== undefined) {
+          gaugeTemp.setValueAnimated(data.temperature, 1);
+          gaugeHum.setValueAnimated(data.humidity, 1);
+        }
+      } catch (err) {
+        console.error('Error fetching sensor data:', err);
+      }
+    }
+
+    // Update gauges every 3 seconds
+    setInterval(fetchSensorData, 1000);
+  </script>
+</body>
+
+</html>

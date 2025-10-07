@@ -1,0 +1,118 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    font-size: 16px;
+}
+
+.navbar {
+    background-color: #007bff;
+    /* Blue color for navbar */
+    color: white;
+    padding: 1rem;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.navbar h1 {
+    margin: 0;
+    font-size: clamp(1.5rem, 5vw, 1.8rem);
+}
+
+.container {
+    margin-top: 4rem;
+    padding: 1rem;
+    max-width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+table.dataTable {
+    width: 100%;
+    margin: 0 auto;
+    clear: both;
+    border-collapse: collapse;
+}
+
+table.dataTable thead th {
+    background-color: #0056b3;
+    /* Darker blue for table header */
+    color: white;
+    padding: 0.75rem;
+    font-size: clamp(0.9rem, 2.5vw, 1rem);
+}
+
+table.dataTable tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+table.dataTable tbody tr:hover {
+    background-color: #e0e0e0;
+}
+
+table.dataTable tbody td {
+    padding: 0.75rem;
+    font-size: clamp(0.85rem, 2.5vw, 0.95rem);
+}
+
+/* Mobile Responsive Styles */
+@media screen and (max-width: 768px) {
+    .container {
+        padding: 0.5rem;
+        max-width: 95%;
+    }
+
+    .navbar h1 {
+        font-size: clamp(1.2rem, 4vw, 1.5rem);
+    }
+
+    table.dataTable {
+        font-size: 0.9rem;
+    }
+
+    table.dataTable thead th,
+    table.dataTable tbody td {
+        padding: 0.5rem;
+        font-size: clamp(0.8rem, 2.2vw, 0.9rem);
+    }
+
+    /* Adjust DataTables controls for mobile */
+    div.dataTables_wrapper div.dataTables_length,
+    div.dataTables_wrapper div.dataTables_filter {
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+
+    div.dataTables_wrapper div.dataTables_filter input {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    div.dataTables_wrapper div.dataTables_paginate {
+        margin-top: 1rem;
+        display: flex;
+        justify-content: center;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .navbar {
+        padding: 0.8rem;
+    }
+
+    .container {
+        margin-top: 3.5rem;
+    }
+
+    table.dataTable thead th,
+    table.dataTable tbody td {
+        font-size: clamp(0.75rem, 2vw, 0.85rem);
+        padding: 0.4rem;
+    }
+}
